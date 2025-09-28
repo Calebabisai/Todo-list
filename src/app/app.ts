@@ -1,6 +1,5 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Todo } from './todo/todo';
 import { AddTodo } from './add-todo/add-todo';
 
 @Component({

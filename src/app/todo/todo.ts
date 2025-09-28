@@ -1,11 +1,15 @@
 import { Component } from '@angular/core';
+import { TodoItem } from '../todo-item/todo-item';
+import { TodoService } from '../todoService';
 
 @Component({
   selector: 'app-todo',
-  imports: [],
+  standalone: true,
+  imports: [TodoItem],
   templateUrl: './todo.html',
-  styleUrl: './todo.css'
+  styleUrls: ['./todo.css']
 })
-export class Todo {
-
+export class TodoComponent {
+  constructor(public todoService: TodoService) {}
 }
+

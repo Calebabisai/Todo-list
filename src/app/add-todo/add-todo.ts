@@ -1,19 +1,22 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TodoService } from '../todoService';
+import { TodoComponent } from '../todo/todo';
 
 @Component({
   selector: 'app-add-todo',
-  imports: [FormsModule],
+  standalone: true,
+  imports: [FormsModule, TodoComponent],
   templateUrl: './add-todo.html',
-  styleUrl: './add-todo.css',
+  styleUrls: ['./add-todo.css'],
 })
 export class AddTodo {
   newTodo = '';
 
-  addTodo() {
-    const tarea = this.newTodo.trim();
-    if (!tarea) return;
+  constructor(private todoService: TodoService) {}
 
+  addTodo(){
+    this.todoService.addTodo(this.newTodo);
     this.newTodo = '';
   }
 }
