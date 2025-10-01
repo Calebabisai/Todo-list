@@ -1,5 +1,19 @@
-<li>
+<li class="todo-item">
   <input type="checkbox" [checked]="todo.completed" (change)="toggleComplete()" />
+
+  <!-- Modo lectura -->
+  @if (!editMode) {
   <span [class.completed]="todo.completed">{{ todo.text }}</span>
+  <button (click)="startEdit()">Edit</button>
   <button (click)="deleteTodo()">Delete</button>
+  } @else {
+  <input
+    [(ngModel)]="editText"
+    (keyup.enter)="saveEdit()"
+    placeholder="Editar todo"
+    aria-label="Editar tarea"
+  />
+  <button (click)="saveEdit()">Guardar</button>
+  <button (click)="cancelEdit()">Cancelar</button>
+  }
 </li>

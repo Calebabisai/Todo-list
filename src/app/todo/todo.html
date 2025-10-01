@@ -1,6 +1,6 @@
 <p>Tareas pendientes: {{ todoService.getPendingCount() }}</p>
 <ul>
   @for (todo of todoService.getTodos(); track $index) {
-    <app-todo-item [todo]="todo" [index]="$index"></app-todo-item>
+  <app-todo-item [todo]="todo" [index]="$index"></app-todo-item>
   }
 </ul>
