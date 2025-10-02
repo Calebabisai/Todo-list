@@ -1,6 +1,24 @@
-<p>Tareas pendientes: {{ todoService.getPendingCount() }}</p>
+<div class="filters">
+  <button (click)="todoService.setFilter('all')" [class.active]="todoService.filter() === 'all'">
+    Todas
+  </button>
+  <button
+    (click)="todoService.setFilter('active')"
+    [class.active]="todoService.filter() === 'active'"
+  >
+    Activas
+  </button>
+  <button
+    (click)="todoService.setFilter('completed')"
+    [class.active]="todoService.filter() === 'completed'"
+  >
+    Completadas
+  </button>
+</div>
+
+<p>Tareas pendientes: {{ todoService.pendingCount() }}</p>
 <ul>
-  @for (todo of todoService.getTodos(); track $index) {
-  <app-todo-item [todo]="todo" [index]="$index"></app-todo-item>
+  @for (todo of todoService.filteredTodos(); track todo.id) {
+  <app-todo-item [todo]="todo"></app-todo-item>
   }
 </ul>

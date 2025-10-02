@@ -1,6 +1,6 @@
 /**Componente que representa un ítem de tarea (todo) */
 
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Todo } from '../todoService';
 import { TodoService } from '../todoService';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,9 @@ import { CommonModule } from '@angular/common';
 })
 export class TodoItem {
   @Input() todo!: Todo;
-  @Input() index!: number;
+  @Output() delete = new EventEmitter<string>();
+  @Output() toggle = new EventEmitter<string>();
+  @Output() update = new EventEmitter<{ id: string; newText: string }>();
 
   editMode = false;
   editText = '';
@@ -24,7 +26,7 @@ export class TodoItem {
   constructor(private todoService: TodoService) {}
   /**Alterna el estado de completado/no completado */
   toggleComplete() {
-    this.todoService.toggleComplete(this.index);
+    this.todoService.toggleComplete(this.todo.id);
   }
   /**Inicia el modo edición
    * @param editMode Indica si está en modo edición o no
@@ -42,7 +44,7 @@ export class TodoItem {
     if (!trimmed) {
       return;
     }
-    this.todoService.updateTodo(this.index, trimmed);
+    this.todoService.updateTodo(this.todo.id, trimmed);
     this.editMode = false;
   }
   /**Cancela el modo edición y restaura el texto original
@@ -58,7 +60,7 @@ export class TodoItem {
    */
   deleteTodo() {
     if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
-      this.todoService.deleteTodo(this.index);
+      this.todoService.deleteTodo(this.todo.id);
     }
   }
 }

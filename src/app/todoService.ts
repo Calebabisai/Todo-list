@@ -4,7 +4,7 @@
  * - Permite guardar los datos en localSorage y los persiste al recargar
  */
 
-import { Injectable } from '@angular/core';
+import { computed, Injectable, signal, effect } from '@angular/core';
 
 /**
  * Representa una tarea (todo)
@@ -12,66 +12,88 @@ import { Injectable } from '@angular/core';
  * @property completed indica si la tarea está completada o no
  */
 export interface Todo {
+  id: string;
   text: string;
   completed: boolean;
 }
+
+export type Filter = 'all' | 'active' | 'completed';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodoService {
-  private todos: Todo[] = [];
-  /**Sirve para obtener todas las tareas
-   * @returns Lista de tareas (copia del array interno)
-   */
-  getTodos(): Todo[] {
-    return [...this.todos];
-  }
+  todos = signal<Todo[]>([]);
+  filter = signal<Filter>('all');
+
+  filteredTodos = computed(() => {
+    const f = this.filter();
+    const list = this.todos();
+    if (f === 'active') return list.filter((t) => !t.completed);
+    if (f === 'completed') return list.filter((t) => t.completed);
+    return list;
+  });
+
+  pendingCount = computed(() => this.todos().filter((t) => !t.completed).length);
+
   /**Carga las tareas desde el localStorage al iniciar el servicio*/
   constructor() {
-    const storedTodos = localStorage.getItem('todos');
-    this.todos = storedTodos ? JSON.parse(storedTodos) : [];
+    const stored = localStorage.getItem('todos');
+    if (stored) {
+      try {
+        this.todos.set(JSON.parse(stored));
+      } catch (e) {
+        console.warn('Error leyendo todos desde localStorage', e);
+      }
+    }
+    effect(() => {
+      try {
+        localStorage.setItem('todos', JSON.stringify(this.todos()));
+      } catch (e) {
+        console.warn('No se han podido guardar todos en localStorage', e);
+      }
+    });
   }
 
   /** Agregar tarea
    * @param text Texto de la nueva tarea
    */
   addTodo(text: string) {
-    if (!text.trim()) return;
-    this.updateTodos(() => this.todos.push({ text: text.trim(), completed: false }));
+    const t = text?.trim();
+    if (!t) return;
+    const newTodo: Todo = {
+      id: Date.now().toString(),
+      text: t,
+      completed: false,
+    };
+    this.todos.update((list) => [...list, newTodo]);
   }
+
   /** Eliminar tarea
-   * @param index Índice de la tarea a eliminar
+   * @param id Identificador de la tarea a eliminar
    */
-  deleteTodo(index: number) {
-    this.updateTodos(() => this.todos.splice(index, 1));
+  deleteTodo(id: string) {
+    this.todos.update((list) => list.filter((x) => x.id !== id));
   }
   /** Marcar completada/no completada
-   * @param index Índice de la tarea a alternar
+   * @param id Identificador de la tarea a alternar
    */
-  toggleComplete(index: number) {
-    this.updateTodos(() => {
-      this.todos[index].completed = !this.todos[index].completed;
-    });
+  toggleComplete(id: string) {
+    this.todos.update((list) =>
+      list.map((x) => (x.id === id ? { ...x, completed: !x.completed } : x))
+    );
   }
   /**
    * Actualiza el texto de una tarea ya creada
    * @param index Índice de la tarea a actualizar
    * @param newText Nuevo texto para la tarea
    */
-  updateTodo(index: number, newText: string) {
-    const text = newText.trim();
-    if (!text) return;
-    this.updateTodos(() => {
-      this.todos[index].text = text;
-    });
+  updateTodo(id: string, newText: string) {
+    const t = newText?.trim();
+    if (!t) return;
+    this.todos.update((list) => list.map((x) => (x.id === id ? { ...x, text: t } : x)));
   }
-  /** Contador de pendientes
-   * @returns Número de tareas no completadas
-   */
-  getPendingCount(): number {
-    return this.todos.filter((t) => !t.completed).length;
-  }
+
   /** Guardar en localStorage */
   private saveToLocalStorage() {
     localStorage.setItem('todos', JSON.stringify(this.todos));
@@ -79,8 +101,14 @@ export class TodoService {
   /** Funcion que actualiza las tareas y guarda en localStorage
    * @param callback Función que modifica el array de tareas
    */
+
   private updateTodos(callback: () => void) {
     callback();
     this.saveToLocalStorage();
+  }
+
+  //Filtros
+  setFilter(f: Filter) {
+    this.filter.set(f);
   }
 }

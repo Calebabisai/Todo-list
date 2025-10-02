@@ -1,0 +1,83 @@
+.filters button.active {
+  front-weight: bold;
+  text-decoration: underline;
+}
+:root {
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --accent: #2563eb;
+  --muted: #6b7280;
+  --danger: #ef4444;
+  --success: #10b981;
+  --glass: rgba(0, 0, 0, 0.04);
+  --radius: 10px;
+  --shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
+  --gap: 12px;
+  --max-width: 760px;
+}
+
+:host {
+  display: block;
+  max-width: var(--max-width);
+  margin: 28px auto;
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* Filtros */
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.filters button {
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 160ms ease;
+  font-weight: 600;
+}
+.filters button:hover {
+  background: var(--glass);
+  color: #111827;
+}
+.filters button.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18);
+}
+
+/* Contador */
+.counter {
+  margin: 0 0 12px 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* Lista */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: block;
+}
+
+/* Responsivo */
+@media (max-width: 520px) {
+  :host {
+    padding: 14px;
+    margin: 12px;
+  }
+  .filters {
+    gap: 6px;
+  }
+  .filters button {
+    padding: 6px 8px;
+    font-size: 0.9rem;
+  }
+}

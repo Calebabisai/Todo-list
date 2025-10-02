@@ -15,4 +15,8 @@ import { TodoService } from '../todoService';
 /**Componente que representa la lista de tareas (todos) */
 export class TodoComponent {
   constructor(public todoService: TodoService) {}
+
+  setFilter(filter: 'all' | 'active' | 'completed') {
+    this.todoService.setFilter(filter);
+  }
 }
